@@ -1,0 +1,46 @@
+date,llm_score,llm_label,reason
+2021-01-27,-4,dovish,Zero rates; ongoing QE; accommodative stance; recovery moderated
+2021-03-17,-4,dovish,Zero rates; QE at $120B; inflation below 2 percent
+2021-04-28,-3,dovish,Accommodative; inflation transitory; still full QE pace
+2021-06-16,-3,dovish,Accommodative stance maintained; inflation transitory factors
+2021-07-28,-2,dovish,Still accommodative; economy progressing toward taper assessment
+2021-09-22,-1,neutral,Taper may soon be warranted; inflation elevated transitory
+2021-11-03,0,neutral,Begins asset-purchase tapering; inflation elevated but transitory
+2021-12-15,1,neutral,Faster taper; drops transitory; inflation exceeded 2 percent
+2022-01-26,2,hawkish,Taper ending; soon appropriate to raise rates; strong labor
+2022-03-16,4,hawkish,First hike; ongoing increases appropriate; inflation elevated
+2022-05-04,4,hawkish,Half-point hike; ongoing increases; highly attentive to inflation
+2022-06-15,5,hawkish,Larger hike; ongoing increases; strongly committed to 2 percent
+2022-07-27,5,hawkish,Big hike; ongoing increases; highly attentive to inflation risks
+2022-09-21,5,hawkish,Aggressive hike; ongoing increases; strongly committed to target
+2022-11-02,4,hawkish,Hike to restrictive stance; ongoing increases though pace-aware
+2022-12-14,4,hawkish,Hike; ongoing increases to sufficiently restrictive stance
+2023-02-01,3,hawkish,Smaller hike; ongoing increases; inflation eased somewhat still
+2023-03-22,2,hawkish,Hike; some additional firming may be appropriate; banking stress
+2023-05-03,1,neutral,Hike but drops ongoing-increases; data-dependent firming language
+2023-06-14,0,neutral,Rate hold; assessing additional firming; inflation still elevated
+2023-07-26,1,neutral,Resumes hike; additional firming possible; restrictive stance
+2023-09-20,0,neutral,Hold; additional firming possible; economy solid; inflation elevated
+2023-11-01,0,neutral,Hold; tighter financial conditions noted; firming still on table
+2023-12-13,-1,neutral,Hold; any additional firming; inflation eased over past year
+2024-01-31,0,neutral,Hold; risks moving into better balance; no cut until confident
+2024-03-20,0,neutral,Hold; risks better balance; awaiting greater confidence on inflation
+2024-05-01,1,neutral,Hold; lack of further progress on inflation; slows balance-sheet runoff
+2024-06-12,0,neutral,Hold; modest further progress on inflation toward target
+2024-07-31,-1,neutral,Hold; both-sided risks; some further progress on inflation
+2024-09-18,-3,dovish,Half-point cut; gained confidence inflation easing sustainably
+2024-11-07,-3,dovish,Quarter-point cut; labor conditions eased; supporting employment
+2024-12-18,-2,dovish,Another cut; supporting maximum employment; risks balanced
+2025-01-29,0,neutral,Hold; risks roughly in balance; inflation somewhat elevated
+2025-03-19,0,neutral,Hold; increased uncertainty; slows balance-sheet runoff
+2025-05-07,0,neutral,Hold; risks of higher unemployment and inflation both risen
+2025-06-18,0,neutral,Hold; uncertainty diminished but elevated; balanced risks
+2025-07-30,0,neutral,Hold; growth moderated; both-sided risks; inflation elevated
+2025-08-22,0,neutral,Framework-review announcement; no rate action or economic assessment
+2025-09-17,-3,dovish,Cut; downside risks to employment have risen; shift in balance
+2025-10-29,-3,dovish,Cut; downside employment risks rose; ends balance-sheet runoff
+2025-12-10,-3,dovish,Cut; downside employment risks; will resume Treasury purchases
+2026-01-28,0,neutral,Hold; balanced dual-mandate risks; inflation somewhat elevated
+2026-03-18,0,neutral,Hold; balanced risks; Middle East uncertainty noted
+2026-04-29,1,neutral,Hold; inflation elevated on higher energy prices; balanced risks
+2026-06-17,2,hawkish,Hold; inflation elevated; pledges to deliver price stability

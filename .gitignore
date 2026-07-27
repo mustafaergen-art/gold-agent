@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Kullanıcıya özel çalışma durumu
+config.json
+
+# ---- Veri ----
+# Piyasa verisi (Yahoo türevi) ve yeniden üretilebilir çıktılar depoya konmaz;
+# src/fetch_*.py ve analiz script'leriyle yeniden üretilir. Bkz. data/README.md
+data/raw/*
+data/processed/*
+data/charts/
+
+# İSTİSNA: script'le yeniden üretilemeyen araştırma çıktıları (Yahoo verisi DEĞİL)
+!data/raw/cpi_release_dates.csv
+!data/processed/fomc_tone_llm.csv
+!data/README.md
