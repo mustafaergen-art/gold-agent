@@ -19,11 +19,16 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import sys
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.dates as mdates  # noqa: E402
 import matplotlib.pyplot as plt     # noqa: E402
 import pandas as pd                 # noqa: E402
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from chart import draw_alarm_line  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw"
@@ -138,6 +143,8 @@ def make_chart(close: pd.Series, tone: pd.DataFrame) -> str:
     ax.grid(True, alpha=0.2)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %y"))
     fig.autofmt_xdate(rotation=30)
+
+    draw_alarm_line(ax, close.index[0])  # yatay alarm çizgisi
 
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / "fomc_tone_gold.png"

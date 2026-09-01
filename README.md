@@ -55,9 +55,13 @@ nohup python src/menubar.py >/tmp/gold_menubar.log 2>&1 &   # arka planda
 Menü çubuğunda `🥇 4158.3 ▲+0.79%` şeklinde görünür; her 30 sn'de bir yenilenir.
 Simgeye tıkla → değişim / önceki kapanış / gün aralığı / son güncelleme + Çıkış.
 
-**Alarm:** 🥇 → "🔔 Alarm fiyatı belirle…" ile bir eşik gir (osascript diyaloğu). Fiyat o değere ulaşınca (≥) yazı **kırmızı yanıp söner**. Eşik `config.json`'a kaydedilir, yeniden başlatmada korunur.
+**Çoklu varlık:** Menü çubuğu altınla birlikte **🚀 SpaceX (SPCX)** ve **₿ Bitcoin (BTC-USD)** fiyatlarını da gösterir (kompakt: `🥇4,417▼1.4% 🔴SAT 🚀143▼1% ₿78k▼1%`). Her varlığın menüde detay satırı ve Günlük/Aylık grafik alt menüsü vardır.
+
+**Alarm (min/max):** Her varlık için ayrı — menüden "🔔 … alarmı" → iki adımda ÜST (max) ve ALT (min) eşik gir (boş bırak = o taraf kapalı). Fiyat max'ın üstüne çıkınca **veya** min'in altına inince yazı **kırmızı yanıp söner**; grafiklerde min/max çizgileri görünür. `config.json`'a kaydedilir.
 
 **Grafik:** 🥇 → "📈 Grafik" → Günlük / Aylık / Yıllık / 5 Yıllık. Seçilen dönemin grafiği ([chart.py](src/chart.py), canlı Yahoo verisi) Önizleme'de açılır.
+
+**Touch Bar (opsiyonel):** Touch Bar'lı MacBook'ta [MTMR](https://github.com/Toxblh/MTMR) (`brew install --cask mtmr`) ile fiyat şeridi klavye üstü ekranda da gösterilir: app her yenilemede `/tmp/gold_ticker.txt` yazar, MTMR [touchbar_ticker.sh](src/touchbar_ticker.sh) ile okur (script'i `~/Library/Application Support/MTMR/` altına kopyala — Documents TCC engeline takılır). `items.json` örneği: `shellScriptTitledButton` + `refreshInterval: 15`.
 
 **Fed Ton Analizi:** 🥇 → "📊 Fed Ton Analizi" → altın fiyatı üzerinde FOMC açıklama tonu okları (güvercin ↑ yeşil / şahin ↓ kırmızı). Üretim: [chart_fomc.py](src/chart_fomc.py), ton skoru [fomc_tone.py](src/fomc_tone.py).
 
