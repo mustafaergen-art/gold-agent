@@ -61,6 +61,8 @@ Simgeye tıkla → değişim / önceki kapanış / gün aralığı / son güncel
 
 **Grafik:** 🥇 → "📈 Grafik" → Günlük / Aylık / Yıllık / 5 Yıllık. Seçilen dönemin grafiği ([chart.py](src/chart.py), canlı Yahoo verisi) Önizleme'de açılır.
 
+**Touch Bar dokunma menüsü:** Fiyat şeridine dokununca app bir seçim penceresi açar (grafikler / alarm formları) — MTMR tap aksiyonu `/tmp/gold_cmd.txt`'ye "menu" yazar, app 1 sn'de bir dinleyip (`check_command`) formu kendi açar.
+
 **Touch Bar (opsiyonel):** Touch Bar'lı MacBook'ta [MTMR](https://github.com/Toxblh/MTMR) (`brew install --cask mtmr`) ile fiyat şeridi klavye üstü ekranda da gösterilir: app her yenilemede `/tmp/gold_ticker.txt` yazar, MTMR [touchbar_ticker.sh](src/touchbar_ticker.sh) ile okur (script'i `~/Library/Application Support/MTMR/` altına kopyala — Documents TCC engeline takılır). `items.json` örneği: `shellScriptTitledButton` + `refreshInterval: 15`.
 
 **Fed Ton Analizi:** 🥇 → "📊 Fed Ton Analizi" → altın fiyatı üzerinde FOMC açıklama tonu okları (güvercin ↑ yeşil / şahin ↓ kırmızı). Üretim: [chart_fomc.py](src/chart_fomc.py), ton skoru [fomc_tone.py](src/fomc_tone.py).

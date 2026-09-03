@@ -45,6 +45,7 @@ DEFAULT_ALARM = 4300.0    # ilk kurulumdaki varsayılan alarm eşiği
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config.json"
 TICKER_FILE = Path("/tmp/gold_ticker.txt")  # Touch Bar (MTMR) bu dosyayı okur
+CMD_FILE = Path("/tmp/gold_cmd.txt")        # Touch Bar dokunuşu buraya komut yazar
 
 QUOTE_URL = "https://query1.finance.yahoo.com/v8/finance/chart/{sym}?interval=1m&range=1d"
 METALS_DEV_URL = "https://api.metals.dev/v1/latest?api_key={key}&currency=USD&unit=toz"
@@ -235,6 +236,9 @@ class GoldBarApp(rumps.App):
         # karar sinyali yavaş değişir (günlük veri) → 30 dakikada bir yenile
         self.signal_timer = rumps.Timer(self.update_signal, 1800)
         self.signal_timer.start()
+        # Touch Bar dokunuş komutlarını dinle (1 sn)
+        self.cmd_timer = rumps.Timer(self.check_command, 1.0)
+        self.cmd_timer.start()
 
     # ---- kullanıcı eylemleri ----
     def on_refresh(self, _):
@@ -330,6 +334,50 @@ class GoldBarApp(rumps.App):
         _save_config(btc_alarm=new)
         self.item_btc_alarm.title = self._bounds_title("Bitcoin", new)
         self._render()
+
+    # ---- Touch Bar dokunuş menüsü ----
+    def check_command(self, _):
+        """Touch Bar tap'inin yazdığı komut dosyasını işler (1 sn'de bir)."""
+        try:
+            if not CMD_FILE.exists():
+                return
+            cmd = CMD_FILE.read_text().strip()
+            CMD_FILE.unlink(missing_ok=True)
+            if cmd == "menu":
+                self.touchbar_menu()
+        except Exception:
+            pass
+
+    def touchbar_menu(self):
+        """Touch Bar'dan açılan seçim menüsü → grafik veya alarm formu."""
+        NSApplication.sharedApplication().activateIgnoringOtherApps_(True)
+        script = (
+            'choose from list {'
+            '"🥇 Altın Grafik (Aylık)","🚀 SpaceX Grafik (Aylık)","₿ Bitcoin Grafik (Aylık)",'
+            '"🔔 Altın Alarmı","🔔 SpaceX Alarmı","🔔 Bitcoin Alarmı"} '
+            'with title "Altın Agent" with prompt "Ne açılsın?" '
+            'OK button name "Aç" cancel button name "Vazgeç"'
+        )
+        try:
+            out = subprocess.run(["osascript", "-e", script],
+                                 capture_output=True, text=True, timeout=120)
+            choice = out.stdout.strip()
+        except Exception:
+            return
+        if not choice or choice == "false":
+            return
+        if "Altın Grafik" in choice:
+            self.on_chart(None, period="aylık")
+        elif "SpaceX Grafik" in choice:
+            self.on_spacex_chart(None, period="aylık")
+        elif "Bitcoin Grafik" in choice:
+            self.on_btc_chart(None, period="aylık")
+        elif "Altın Alarmı" in choice:
+            self.on_set_alarm(None)
+        elif "SpaceX Alarmı" in choice:
+            self.on_set_spacex_alarm(None)
+        elif "Bitcoin Alarmı" in choice:
+            self.on_set_btc_alarm(None)
 
     def on_recompute_signal(self, _):
         self.update_signal(None)
