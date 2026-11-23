@@ -20,6 +20,7 @@ import datetime as dt
 import functools
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -38,6 +39,8 @@ import signal_engine  # noqa: E402
 SYMBOL = "GC=F"           # altın: vadeli (spot anahtar yoksa yedek)
 SPACEX_SYMBOL = "SPCX"    # SpaceX (Nasdaq)
 BTC_SYMBOL = "BTC-USD"    # Bitcoin (Yahoo)
+NVDA_SYMBOL = "NVDA"      # NVIDIA (Nasdaq) — menü + Touch Bar'da; başlıkta değil (çentik dar)
+ANT_SYMBOL = "ANT"        # Anthropic, PBC (Nasdaq) — menü + Touch Bar'da
 REFRESH_SECONDS = 30      # fiyat yenileme aralığı
 BLINK_SECONDS = 0.6       # alarm anında yanıp-sönme hızı
 DEFAULT_ALARM = 4300.0    # ilk kurulumdaki varsayılan alarm eşiği
@@ -179,7 +182,11 @@ class GoldBarApp(rumps.App):
         self.item_btc_alarm = rumps.MenuItem(
             self._bounds_title("Bitcoin", self.btc_alarm),
             callback=self.on_set_btc_alarm)
+        self.item_nvda = rumps.MenuItem("⚡ NVIDIA (NVDA): —")
+        self.item_ant = rumps.MenuItem("🅰 Anthropic (ANT): —")
         self.item_updated = rumps.MenuItem("Güncelleme: —")
+        self.nvda_segment = ""  # Touch Bar şeridine eklenen kompakt NVDA metni
+        self.ant_segment = ""   # Touch Bar şeridine eklenen kompakt ANT metni
 
         # 📈 Grafik alt menüsü — dönem seç
         chart_menu = rumps.MenuItem("📈 Grafik")
@@ -200,6 +207,18 @@ class GoldBarApp(rumps.App):
             btc_menu.add(rumps.MenuItem(
                 label, callback=functools.partial(self.on_btc_chart, period=period)))
 
+        # ⚡ NVIDIA grafik alt menüsü — günlük / aylık
+        nvda_menu = rumps.MenuItem("⚡ NVIDIA Grafik")
+        for label, period in [("Günlük", "günlük"), ("Aylık", "aylık")]:
+            nvda_menu.add(rumps.MenuItem(
+                label, callback=functools.partial(self.on_nvda_chart, period=period)))
+
+        # 🅰 Anthropic grafik alt menüsü — günlük / aylık
+        ant_menu = rumps.MenuItem("🅰 Anthropic Grafik")
+        for label, period in [("Günlük", "günlük"), ("Aylık", "aylık")]:
+            ant_menu.add(rumps.MenuItem(
+                label, callback=functools.partial(self.on_ant_chart, period=period)))
+
         self.menu = [
             self.item_signal,
             self.item_signal_detail,
@@ -216,6 +235,11 @@ class GoldBarApp(rumps.App):
             self.item_btc,
             btc_menu,
             self.item_btc_alarm,
+            None,
+            self.item_nvda,
+            nvda_menu,
+            self.item_ant,
+            ant_menu,
             None,
             chart_menu,
             rumps.MenuItem("📊 Fed Ton Analizi", callback=self.on_fomc_chart),
@@ -379,6 +403,26 @@ class GoldBarApp(rumps.App):
         elif "Bitcoin Alarmı" in choice:
             self.on_set_btc_alarm(None)
 
+    def on_nvda_chart(self, _, period: str):
+        """NVIDIA (NVDA) grafiğini üretip Önizleme'de açar."""
+        try:
+            path = chart.make_chart(period, symbol=NVDA_SYMBOL,
+                                    label="NVIDIA (NVDA)", slug="nvda",
+                                    unit="USD")
+            subprocess.run(["open", path], check=False)
+        except Exception as e:
+            rumps.alert(title="NVIDIA grafik hatası", message=str(e)[:150])
+
+    def on_ant_chart(self, _, period: str):
+        """Anthropic (ANT) grafiğini üretip Önizleme'de açar."""
+        try:
+            path = chart.make_chart(period, symbol=ANT_SYMBOL,
+                                    label="Anthropic (ANT)", slug="ant",
+                                    unit="USD")
+            subprocess.run(["open", path], check=False)
+        except Exception as e:
+            rumps.alert(title="Anthropic grafik hatası", message=str(e)[:150])
+
     def on_recompute_signal(self, _):
         self.update_signal(None)
 
@@ -520,6 +564,42 @@ class GoldBarApp(rumps.App):
             except Exception:
                 self.item_btc.title = "₿ Bitcoin (BTC/USD): veri alınamadı"
 
+            # ⚡ NVIDIA (NVDA) — menü satırı + Touch Bar şeridi (başlığa girmez: çentik dar)
+            try:
+                v = fetch_quote(NVDA_SYMBOL)
+                vp, vpv = v["price"], v["prev"]
+                if vp and vpv:
+                    vpct = (vp / vpv - 1) * 100
+                    varr = "▲" if vpct > 0 else ("▼" if vpct < 0 else "▬")
+                    self.nvda_segment = f" ⚡{vp:,.0f}{varr}{abs(vpct):.0f}%"
+                    self.item_nvda.title = f"⚡ NVIDIA (NVDA): {vp:,.2f} $  {varr} {vpct:+.2f}%"
+                elif vp:
+                    self.nvda_segment = f" ⚡{vp:,.0f}"
+                    self.item_nvda.title = f"⚡ NVIDIA (NVDA): {vp:,.2f} $"
+            except Exception:
+                self.item_nvda.title = "⚡ NVIDIA (NVDA): veri alınamadı"
+
+            # 🅰 Anthropic (ANT) — menü satırı + Touch Bar şeridi
+            try:
+                a = fetch_quote(ANT_SYMBOL)
+                ap, apv = a["price"], a["prev"]
+                if ap and apv:
+                    apct = (ap / apv - 1) * 100
+                    aarr = "▲" if apct > 0 else ("▼" if apct < 0 else "▬")
+                    self.ant_segment = f" 🅰{ap:,.0f}{aarr}{abs(apct):.0f}%"
+                    self.item_ant.title = f"🅰 Anthropic (ANT): {ap:,.2f} $  {aarr} {apct:+.2f}%"
+                elif ap:
+                    self.ant_segment = f" 🅰{ap:,.0f}"
+                    self.item_ant.title = f"🅰 Anthropic (ANT): {ap:,.2f} $"
+            except Exception:
+                self.item_ant.title = "🅰 Anthropic (ANT): veri alınamadı"
+
+            # çentik dar → başlıkta da 5 varlık, yüzdesiz (ok kalır; yüzde menüde)
+            self.last_text = re.sub(
+                r"([▲▼▬])\d+(?:\.\d+)?%", r"\1",
+                self.last_text + self.nvda_segment + self.ant_segment,
+            ).replace(",", "")
+
             now = dt.datetime.now().strftime("%H:%M:%S")
             alarms = []
             if self._gold_in_alarm():
@@ -534,9 +614,10 @@ class GoldBarApp(rumps.App):
             self.last_text = "🥇 ⚠️"
             self.item_updated.title = f"Hata: {str(e)[:40]}"
         self._render()
-        # Touch Bar (MTMR) için aynı metni dosyaya yaz; alarmda 🔴 öne gelir
+        # Touch Bar (MTMR) için metni dosyaya yaz; alarmda 🔴 öne gelir.
+        # Başlık artık 5 varlıklı ve yüzdesiz — Touch Bar aynı metni kullanır.
         try:
-            txt = ("🔴 " if self._in_alarm() else "") + self.last_text
+            txt = ("🔴" if self._in_alarm() else "") + self.last_text
             TICKER_FILE.write_text(txt)
         except Exception:
             pass
